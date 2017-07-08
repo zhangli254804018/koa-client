@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const _ = require('lodash')
+const ObjectId = mongoose.Schema.Types.ObjectId;
 const userSchema = new mongoose.Schema({
+    cid: ObjectId,
     uid: { type: Number, default: 0 },
     name: { type: String, default: 'your name' },
     mobile: { type: String, default: '' },

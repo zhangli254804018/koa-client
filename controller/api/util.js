@@ -38,7 +38,7 @@ class util {
     }
 
     static uidrandom(uid) {
-        return uid ? uid++ : 20017
+        return uid ? uid : 20017
     }
 
 }

@@ -18,8 +18,7 @@ class UserController {
         const login = await this.login(ctx);
         obj.email = query.email;
         obj.password = query.password;
-        obj.uid = Util.uidrandom(query.uid);
-        if (query.email && query.password && !login) {
+        if (query.email && query.password && !login.result) {
             return await userModel.create(obj, function(err) {
                 if (err) return Util.reponse(ctx, -1);
             }).then(function(doc) {
@@ -39,9 +38,9 @@ class UserController {
         obj.email = query.email;
         if (query.email) {
             return await userModel.findOne(obj, 'users', function(err) {
-                if (err) return false;
+                if (err) return Util.reponse(ctx, -1);
             }).exec().then(function(doc) {
-                return doc
+                return doc ? Util.reponse(ctx, 0, doc) : Util.reponse(ctx, -1)
             })
         } else {
             return Util.reponse(ctx, -1)
@@ -54,8 +53,39 @@ class UserController {
     }
 
     // 更新用户资料
-    static async put(ctx) {
+    static async update(ctx) {
         // await ……
+        let i = 0,
+            updated
+        const obj = {}
+        const query = _.extend({}, {
+            name: '',
+            mobile: '',
+            email: ''
+        }, Util.query(ctx));
+        const queryList = _.keys(query)
+        const login = await this.login(ctx);
+        while (queryList[i]) {
+            if (query[queryList[i]]) {
+                obj[queryList[i]] = query[queryList[i]]
+            } else {
+                return Util.reponse(ctx, -1)
+            }
+            i++
+        }
+        if (login.result) {
+            return await userModel.findByIdAndUpdate(login.result._id, { $set: obj },
+                // function(err, updateds) {
+                //     if (err) return Util.reponse(ctx, -1);
+                //     updated = updateds
+                //     console.log('updated.name', updated)
+                //     return updated ? Util.reponse(ctx, 0, updated) : Util.reponse(ctx, -1)
+                // }
+            ).exec().then(function(doc) {
+                return doc ? Util.reponse(ctx, 0, doc) : Util.reponse(ctx, -1)
+            })
+        }
+
     }
 
     // 删除用户
@@ -82,6 +112,7 @@ class UserController {
     // 重置密码
     static async resetpwd(ctx) {
         // await ……
+
     }
 
 }

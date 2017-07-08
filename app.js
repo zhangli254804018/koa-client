@@ -23,7 +23,7 @@ options.server.reconnectTries = options.replset.socketOptions = { reconnectTries
 // error handler
 onerror(app)
 
-mongoose.connect('mongodb://104.160.38.174:27017/koa2', options)
+const connection = mongoose.connect('mongodb://104.160.38.174:27017/koa2', options)
 
 const db = mongoose.connection
 db.on('error', console.error.bind(console, '鏈接失敗'))
