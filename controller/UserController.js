@@ -15,15 +15,15 @@ class UserController {
         // await ……
         const query = Util.query(ctx);
         const obj = {};
+        const login = await this.login(ctx);
         obj.email = query.email;
         obj.password = query.password;
-        const login = await this.login(ctx);
+        obj.uid = Util.uidrandom(query.uid);
         if (query.email && query.password && !login) {
             return await userModel.create(obj, function(err) {
                 if (err) return Util.reponse(ctx, -1);
             }).then(function(doc) {
                 doc.password = Util.pwdhide(doc.password)
-                doc.uid = Util.uidrandom(doc.uid)
                 return Util.reponse(ctx, 0, doc)
             })
         } else {
