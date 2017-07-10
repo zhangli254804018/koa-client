@@ -4,7 +4,7 @@ class util {
 
     static query(ctx) {
         if (ctx.query) {
-            return ctx.query
+            return _.extend({}, ctx.query)
         } else {
             return {
                 code: -1,
@@ -41,6 +41,25 @@ class util {
         return uid ? uid : 20017
     }
 
+    static vaildUser(value, type) {
+        const vaild = {
+            mobile: /[1]\d{10}/,
+            email: /(.)(\.)(com|net|cn|online)/,
+            password: /\w{6,20}/,
+            name: /(\w)|(\W)/
+        }
+        const tips = {
+            mobile: '手機格式錯誤（請輸入11位合法的手機號）',
+            email: '郵箱格式錯誤',
+            password: '密碼格式錯誤請（輸入字母或者數字6-20位）',
+            name: '用戶名格式錯誤'
+        }
+        if (value && value.match(vaild[type]) || !vaild[type]) {
+            return false
+        } else {
+            return tips[type] ? tips[type] : '請求錯誤'
+        }
+    }
 }
 
 
