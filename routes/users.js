@@ -36,8 +36,4 @@ router.get('/update', async(ctx, next) => {
     ctx.body = response
 })
 
-
-
-
-
 module.exports = router

@@ -60,6 +60,23 @@ class util {
             return tips[type] ? tips[type] : '請求錯誤'
         }
     }
+
+    static vaildArticle(value, type) {
+        const vaild = {
+            title: /\w{1,30}/,
+            subtitle: /\w{1,60}/
+        }
+        const tips = {
+            title: '標題不合法',
+            email: '副標題不合法'
+        }
+        if (value && value.match(vaild[type]) || !vaild[type]) {
+            return false
+        } else {
+            return tips[type] ? tips[type] : '請求錯誤'
+        }
+    }
+
 }
 
 
