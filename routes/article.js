@@ -10,10 +10,21 @@ router.get('/', async(ctx, next) => {
     ctx.body = 'this is a article response!'
 })
 
-//註冊
-router.get('/post', async(ctx, next) => {
+//發佈
+router.post('/post', async(ctx, next) => {
     const sussess = await ArticleController.post(ctx)
     ctx.body = sussess
 })
+
+//刪除
+router.post('/del', async(ctx, next) => {
+    ctx.body = await ArticleController.remove(ctx)
+})
+
+//更新數據
+router.post('/update', async(ctx, next) => {
+    ctx.body = await ArticleController.update(ctx)
+})
+
 
 module.exports = router

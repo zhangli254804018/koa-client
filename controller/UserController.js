@@ -28,6 +28,7 @@ class UserController {
         const response = {}
         if (doc) {
             response.uid = doc.id
+            response.username = doc.username
             response.name = doc.name
             response.email = doc.email
             response.mobile = doc.mobile
@@ -45,7 +46,7 @@ class UserController {
         const query = Util.query(ctx);
         const obj = {};
         const login = await this.login(ctx);
-        obj.email = query.email;
+        obj.username = query.username;
         obj.password = query.password;
         let i = 0,
             errmsg
@@ -58,8 +59,8 @@ class UserController {
             }
             i++
         }
-        if (query.email && query.password && !login.result && !errmsg) {
-            await userModel.create(obj, function(err) {
+        if (query.username && query.password && !login.result && !errmsg) {
+            await userModel.create(query, function(err) {
                 if (err) return Util.reponse(ctx, -1, '', err)
             }).then(function(doc) {
                 doc.password = Util.pwdhide(doc.password)
@@ -82,10 +83,10 @@ class UserController {
         const query = Util.query(ctx);
         const obj = {};
         const vm = this
-        obj.email = query.email
+        obj.username = query.username
         obj.password = query.password
-        if (query.email) {
-            return await userModel.findOne(obj, function(err) {
+        if (!_.isEmpty(query)) {
+            return await userModel.findOne(query, function(err) {
                 if (err) return Util.reponse(ctx, -1)
             }).exec().then(function(doc) {
                 if (doc) {
@@ -104,9 +105,9 @@ class UserController {
         const query = Util.query(ctx);
         const obj = {};
         const vm = this
-        if (query.email) obj.email = query.email
-        if (query.uid) obj.uid = query.uid
-        if (query.email || query.uid) {
+        if (!_.isEmpty(query) && query.username) obj.username = query.username
+        if (!_.isEmpty(query) && query.uid) obj.uid = query.uid
+        if (!_.isEmpty(query)) {
             return await userModel.findOne(obj, function(err) {
                 if (err) return Util.reponse(ctx, -1)
             }).exec().then(function(doc) {
@@ -141,7 +142,7 @@ class UserController {
             i++
         }
         const login = await this.login(ctx)
-        if (login.result && !errmsg) {
+        if (login.result && !errmsg && !_.isEmpty(query)) {
             return await userModel.findByIdAndUpdate(login.result.uid, { $set: query }, { new: true }).exec().then(function(doc) {
                 return doc ? Util.reponse(ctx, 0, vm.init(doc)) : Util.reponse(ctx, -1)
             }).catch(function(err) {
@@ -158,10 +159,11 @@ class UserController {
         const query = Util.query(ctx);
         const obj = {};
         const login = await this.login(ctx);
-        obj.email = query.email;
-        if (!_.isEmpty(query) && login) {
+        if (query.username) obj.username = query.username
+        if (query.uid) obj.uid = query.uid
+        if (!_.isEmpty(query) && login.result) {
             try {
-                userModel.remove(obj, 'users', function(err, doc) {
+                return await userModel.remove(obj, 'users', function(err, doc) {
                     if (err) return Util.reponse(ctx, -1, doc, '刪除失敗')
                     return Util.reponse(ctx, 0, doc, '刪除成功')
                 })

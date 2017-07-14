@@ -3,8 +3,8 @@ const _ = require('lodash');
 class util {
 
     static query(ctx) {
-        if (ctx.query) {
-            return _.extend({}, ctx.query)
+        if (!_.isEmpty(ctx.request)) {
+            return (ctx.request.method == 'POST') ? ctx.request.body : ctx.query;
         } else {
             return {
                 code: -1,
@@ -63,8 +63,9 @@ class util {
 
     static vaildArticle(value, type) {
         const vaild = {
-            title: /\w{1,30}/,
-            subtitle: /\w{1,60}/
+            title: /.{1,30}/,
+            subtitle: /.{1,60}/,
+            author: /.{1,30}/
         }
         const tips = {
             title: '標題不合法',
@@ -75,6 +76,37 @@ class util {
         } else {
             return tips[type] ? tips[type] : '請求錯誤'
         }
+    }
+
+    // 解析上下文里node原生请求的POST参数
+    static parsePostData(ctx) {
+        const vm = this
+        return new Promise((resolve, reject) => {
+            try {
+                let postdata = "";
+                ctx.req.addListener('data', (data) => {
+                    postdata += data
+                })
+                ctx.req.addListener("end", function() {
+                    let parseData = vm.parseQueryStr(postdata)
+                    resolve(parseData)
+                })
+            } catch (err) {
+                reject(err)
+            }
+        })
+    }
+
+    // 将POST请求参数字符串解析成JSON
+    static parseQueryStr(queryStr) {
+        let queryData = {}
+        let queryStrList = queryStr.split('&')
+        console.log(queryStrList)
+        for (let [index, queryStr] of queryStrList.entries()) {
+            let itemList = queryStr.split('=')
+            queryData[itemList[0]] = decodeURIComponent(itemList[1])
+        }
+        return queryData
     }
 
 }

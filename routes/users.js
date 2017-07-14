@@ -11,7 +11,7 @@ router.get('/', async(ctx, next) => {
 })
 
 //註冊
-router.get('/register', async(ctx, next) => {
+router.post('/register', async(ctx, next) => {
     const sussess = await UserController.register(ctx)
     ctx.body = sussess
 })
@@ -22,7 +22,7 @@ router.get('/del', async(ctx, next) => {
 })
 
 //登錄
-router.get('/login', async(ctx, next) => {
+router.post('/login', async(ctx, next) => {
     const uid = ctx.cookies.get('uid')
     if (uid) ctx.query.uid = uid
     const obj = uid ? await UserController.login(ctx) : await UserController.login2(ctx)
