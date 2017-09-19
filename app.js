@@ -10,6 +10,7 @@ const koaBody = require('koa-bodyparser')
 const index = require('./routes/index')
 const users = require('./routes/users')
 const article = require('./routes/article')
+const upload = require('./routes/upload')
 const jsonp = require('koa-jsonp')
 const cloudinary = global.cloudinary = require('cloudinary')
 const mongoose = require('mongoose')
@@ -67,5 +68,6 @@ app.use(async(ctx, next) => {
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
 app.use(article.routes(), article.allowedMethods())
+app.use(upload.routes(), upload.allowedMethods())
 
 module.exports = app
